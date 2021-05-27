@@ -10,7 +10,7 @@ class RDEC(nn.Module):
         self.encoder = encoder
         self.alpha = alpha
         
-        self.centroids = nn.Embedding(num_clusters, 8)
+        self.centroids = nn.Embedding(num_clusters, encoder.emb_dim)
         self.tmp_weights = nn.Parameter(self.init_centroids(input_data, num_clusters))
         self.centroids.weight = self.tmp_weights
         

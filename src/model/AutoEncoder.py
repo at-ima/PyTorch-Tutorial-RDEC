@@ -44,6 +44,8 @@ class EncoderBlock(nn.Module):
         super(EncoderBlock, self).__init__()
         padding = kernel_size//2
         
+        self.emb_dim = emb_dim
+        
         self.init_layer1 = ConvBlock(1, base_unit_num, kernel_size)
         
         self.block1 = nn.Sequential(
