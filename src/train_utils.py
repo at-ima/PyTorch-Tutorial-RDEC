@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 
+# Loss Calculator
 class LossMetric(object):
     def __init__(self, loss_func):
         self.metric = loss_func
@@ -8,16 +9,17 @@ class LossMetric(object):
     def __call__(self, gt, pred):
         loss = self.metric(gt, pred)
         return  torch.mean(loss)
-    
+
+# Logging Loss
 class LossAccumulator(object):
-    def __init__(self, dataloader):
+    def __init__(self, dataloader):        
         self.datasize = len(dataloader.dataset)
         self.loss = 0
         
     def __call__(self, loss):
         self.loss += np.mean(loss.detach().cpu().numpy()) / self.datasize
         
-    def clear(self):
+    def clear(self):# call this beggining of each epoch
         self.loss = 0
         
 class QtoPConverter(object):
@@ -33,16 +35,18 @@ class QtoPConverter(object):
         denominaotr = torch.unsqueeze(denominator, 1).repeat(1, num_clusters)
         p = numerator/denominaotr
         return p
-    
+
+# https://pytorch.org/tutorials/beginner/fgsm_tutorial.html
 def fgsm_attack(image, epsilon, data_grad):
     # Collect the element-wise sign of the data gradient
     sign_data_grad = data_grad.sign()
     # Create the perturbed image by adjusting each pixel of the input image
     perturbed_image = image + epsilon*sign_data_grad
     # Adding clipping to maintain [0,1] range
-    perturbed_image = torch.clamp(perturbed_image, 0, 1)
+    perturbed_image = torch.clamp(perturbed_image, 0, 1).detach()#added .detach()
     # Return the perturbed image
     return perturbed_image
 
+# KL Divergence
 def KLDiv(p, q):
     return p*torch.log(p/q)

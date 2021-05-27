@@ -1,4 +1,6 @@
-#https://github.com/davda54/sam/blob/main/sam.py
+# Sharpness Aware Minimization Optimizer
+# https://arxiv.org/abs/2010.01412
+# https://github.com/davda54/sam/blob/main/sam.py
 
 import torch
 

@@ -6,6 +6,17 @@ import torchvision.transforms as transforms
 import numpy as np
 
 def load_mnist(data_path, batch_size, val_portion=0):
+    '''
+    Args:
+        data_path: path to dataset
+        batch_size: batch size
+        val_portion: portion of validation data
+    Returns:
+        dataloaders: dict which stores datasets
+        classes: class corresponding to label
+    '''
+    
+    
     transform = transforms.Compose(
         [transforms.ToTensor(),
          transforms.Normalize((0.5, ), (0.5, ))])

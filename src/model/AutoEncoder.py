@@ -2,9 +2,13 @@ import torch
 from torch import nn
 from collections import OrderedDict
 
+# defines custom nn module
+# see this https://pytorch.org/tutorials/beginner/examples_nn/two_layer_net_module.html
+
 class ConvBlock(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size):
         super(ConvBlock, self).__init__()
+        
         padding = kernel_size//2
         self.block = nn.Sequential(
             nn.Conv2d(in_channels=in_channels, out_channels=out_channels,
@@ -21,6 +25,7 @@ class ConvBlock(nn.Module):
 class ConvTBlock(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride):
         super(ConvTBlock, self).__init__()
+        
         self.block = nn.Sequential(
             nn.ConvTranspose2d(in_channels=in_channels, out_channels=out_channels,
                                kernel_size=kernel_size, stride=stride, bias=False),
@@ -67,15 +72,15 @@ class EncoderBlock(nn.Module):
     def forward(self, x):
         
         x = self.init_layer1(x)
-        x = self.block1(x) + x
+        x = self.block1(x) + x #skip connection
         x = self.mp1(x)
         
         x = self.init_layer2(x)
-        x = self.block2(x) + x
+        x = self.block2(x) + x #skip connection
         x = self.mp2(x)
         
         x = self.init_layer3(x)
-        x = self.block3(x) + x
+        x = self.block3(x) + x #skip connection
         x = self.last_layer(x)
         
         return x
@@ -112,17 +117,18 @@ class DecoderBlock(nn.Module):
     def forward(self, x):
         
         x = self.init_layer1(x)
-        x = self.block1(x)
+        x = self.block1(x) + x #skip connection
         
         x = self.init_layer2(x)
-        x = self.block2(x)
+        x = self.block2(x) + x #skip connection
         
         x = self.init_layer3(x)
-        x = self.block3(x)
+        x = self.block3(x) + x #skip connection
         x = self.last_layer(x)
         
         return x
     
+
 class AutoEncoder(nn.Module):
     def __init__(self, enc_layers, dec_layers):
         super(AutoEncoder, self).__init__()

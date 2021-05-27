@@ -15,6 +15,7 @@ class RDEC(nn.Module):
         self.centroids.weight = self.tmp_weights
         
     def init_centroids(self, input_data, num_clusters):
+        # define initial centroids using k means
         x = self.encoder(input_data)
         x = torch.squeeze(x)
         centroids = kmeans(x, num_clusters)
@@ -22,6 +23,7 @@ class RDEC(nn.Module):
         return centroids
     
     def calc_q_value(self, x):
+        # calculation q value using weights of centroids
         norm_squared = torch.sum((x.unsqueeze(1) - self.centroids.weight) ** 2, 2)
         numerator = 1.0 / (1.0 + (norm_squared / self.alpha))
         power = float(self.alpha + 1) / 2
@@ -33,5 +35,3 @@ class RDEC(nn.Module):
         x = torch.squeeze(x)
         x = self.calc_q_value(x)
         return x
-        
-        
