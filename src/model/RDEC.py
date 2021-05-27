@@ -9,10 +9,7 @@ class RDEC(nn.Module):
         
         self.encoder = encoder
         self.alpha = alpha
-        
-        self.centroids = nn.Embedding(num_clusters, encoder.emb_dim)
-        self.tmp_weights = nn.Parameter(self.init_centroids(input_data, num_clusters))
-        self.centroids.weight = self.tmp_weights
+        self.centroids = nn.Parameter(self.init_centroids(input_data, num_clusters))
         
     def init_centroids(self, input_data, num_clusters):
         # define initial centroids using k means
@@ -24,7 +21,7 @@ class RDEC(nn.Module):
     
     def calc_q_value(self, x):
         # calculation q value using weights of centroids
-        norm_squared = torch.sum((x.unsqueeze(1) - self.centroids.weight) ** 2, 2)
+        norm_squared = torch.sum((x.unsqueeze(1) - self.centroids) ** 2, 2)
         numerator = 1.0 / (1.0 + (norm_squared / self.alpha))
         power = float(self.alpha + 1) / 2
         numerator = numerator ** power
