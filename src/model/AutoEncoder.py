@@ -40,34 +40,34 @@ class ConvTBlock(nn.Module):
         
 
 class EncoderBlock(nn.Module):
-    def __init__(self, num_layers, kernel_size=3):
+    def __init__(self, num_layers, base_unit_num=8, emb_dim=8, kernel_size=3):
         super(EncoderBlock, self).__init__()
         padding = kernel_size//2
         
-        self.init_layer1 = ConvBlock(1, 16, kernel_size)
+        self.init_layer1 = ConvBlock(1, base_unit_num, kernel_size)
         
         self.block1 = nn.Sequential(
             OrderedDict(
-                [(f'conv1_{i}', ConvBlock(16, 16, kernel_size)) for i in range(num_layers-1)]
+                [(f'conv1_{i}', ConvBlock(base_unit_num, base_unit_num, kernel_size)) for i in range(num_layers-1)]
             )
         )
         self.mp1 = nn.MaxPool2d(2)
         
-        self.init_layer2 = ConvBlock(16, 32, kernel_size)
+        self.init_layer2 = ConvBlock(base_unit_num, base_unit_num*2, kernel_size)
         self.block2 = nn.Sequential(
             OrderedDict(
-                [(f'conv2_{i}',ConvBlock(32, 32, kernel_size)) for i in range(num_layers-1)]
+                [(f'conv2_{i}',ConvBlock(base_unit_num*2, base_unit_num*2, kernel_size)) for i in range(num_layers-1)]
             )
         )
         self.mp2 = nn.MaxPool2d(2)
         
-        self.init_layer3 = ConvBlock(32, 64, kernel_size)
+        self.init_layer3 = ConvBlock(base_unit_num*2, base_unit_num*4, kernel_size)
         self.block3 = nn.Sequential(
             OrderedDict(
-                [(f'conv3_{i}', ConvBlock(64, 64, kernel_size)) for i in range(num_layers-1)]
+                [(f'conv3_{i}', ConvBlock(base_unit_num*4, base_unit_num*4, kernel_size)) for i in range(num_layers-1)]
             )
         )
-        self.last_layer = nn.Conv2d(64, 8, 7)
+        self.last_layer = nn.Conv2d(base_unit_num*4, emb_dim, 7)
         
     def forward(self, x):
         
@@ -87,31 +87,31 @@ class EncoderBlock(nn.Module):
         
         
 class DecoderBlock(nn.Module):
-    def __init__(self, num_layers, kernel_size=3):
+    def __init__(self, num_layers, base_unit_num=4, emb_dim=8, kernel_size=3):
         super(DecoderBlock, self).__init__()
         padding = kernel_size//2
         
-        self.init_layer1 = ConvTBlock(8, 64, kernel_size=7, stride=7)
+        self.init_layer1 = ConvTBlock(emb_dim, base_unit_num*4, kernel_size=7, stride=7)
         self.block1 = nn.Sequential(
             OrderedDict(
-                [(f'conv1_{i}',ConvBlock(64, 64, kernel_size)) for i in range(num_layers-1)]
+                [(f'conv1_{i}',ConvBlock(base_unit_num*4, base_unit_num*4, kernel_size)) for i in range(num_layers-1)]
             )
         )
         
-        self.init_layer2 = ConvTBlock(64, 32, kernel_size=2, stride=2)
+        self.init_layer2 = ConvTBlock(base_unit_num*4, base_unit_num*2, kernel_size=2, stride=2)
         self.block2 = nn.Sequential(
             OrderedDict(
-                [(f'conv2_{i}',ConvBlock(32, 32, kernel_size)) for i in range(num_layers-1)]
+                [(f'conv2_{i}',ConvBlock(base_unit_num*2, base_unit_num*2, kernel_size)) for i in range(num_layers-1)]
             )
         )
-        self.init_layer3 = ConvTBlock(32, 16, kernel_size=2, stride=2)
+        self.init_layer3 = ConvTBlock(base_unit_num*2, base_unit_num, kernel_size=2, stride=2)
         self.block3 = nn.Sequential(
             OrderedDict(
-                [(f'conv3_{i}',ConvBlock(16, 16, kernel_size)) for i in range(num_layers-1)]
+                [(f'conv3_{i}',ConvBlock(base_unit_num, base_unit_num, kernel_size)) for i in range(num_layers-1)]
             )
         )
         
-        self.last_layer = nn.Conv2d(16, 1, 1)
+        self.last_layer = nn.Conv2d(base_unit_num, 1, 1)
         
         
     def forward(self, x):
@@ -130,10 +130,10 @@ class DecoderBlock(nn.Module):
     
 
 class AutoEncoder(nn.Module):
-    def __init__(self, enc_layers, dec_layers):
+    def __init__(self, enc_layers, dec_layers, base_unit_num, emb_dim):
         super(AutoEncoder, self).__init__()
-        self.encoder = EncoderBlock(3)
-        self.decoder = DecoderBlock(3)
+        self.encoder = EncoderBlock(enc_layers, base_unit_num, emb_dim)
+        self.decoder = DecoderBlock(dec_layers, base_unit_num, emb_dim)
         
     def forward(self, x):
         x = self.encoder(x)

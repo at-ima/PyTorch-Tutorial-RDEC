@@ -2,7 +2,9 @@
     "model_params":{
         "encoder_layers":3,
         "decoder_layers":3,
-        "num_clusters":10
+        "num_clusters":10,
+        "base_unit_num":4,
+        "emb_dim":4
     },
     "train_params":{
         "pretrain":{
