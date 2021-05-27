@@ -1,0 +1,27 @@
+{
+    "model_params":{
+        "encoder_layers":3,
+        "decoder_layers":3,
+        "num_clusters":10
+    },
+    "train_params":{
+        "pretrain":{
+            "num_epochs":256,
+            "batch_size":512,
+            "lr":1e-1,
+            "lr_factor":0.8,
+            "patience":2,
+            "val_portion":0.1
+        },
+        "train":{
+            "num_epochs":32,
+            "batch_size":512,
+            "lr":1e-4,
+            "lr_factor":0.8,
+            "patience":2,
+            "epsilon":1,
+            "gamma":5
+        }
+        
+    }
+}
