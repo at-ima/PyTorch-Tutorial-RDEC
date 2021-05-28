@@ -2,27 +2,27 @@
     "model_params":{
         "encoder_layers":2,
         "decoder_layers":2,
-        "num_clusters":10,
+        "num_clusters":20,
         "base_unit_num":4,
-        "emb_dim":8
+        "emb_dim":16
     },
     "train_params":{
         "pretrain":{
-            "num_epochs":512,
+            "num_epochs":1024,
             "batch_size":512,
             "lr":1e-1,
             "lr_factor":0.8,
-            "patience":8,
+            "patience":16,
             "val_portion":0.1
         },
         "train":{
             "num_epochs":32,
             "batch_size":512,
-            "lr":1e-4,
+            "lr":1e-3,
             "lr_factor":0.8,
             "patience":2,
             "epsilon":1,
-            "gamma":5
+            "gamma":1
         }
         
     }

@@ -4,15 +4,20 @@ from torch import nn
 from .kmeans import kmeans
 
 class RDEC(nn.Module):
-    def __init__(self, encoder, num_clusters, input_data, alpha=1):
+    def __init__(self, encoder, num_clusters, input_data=None, alpha=1):
         super(RDEC, self).__init__()
         
         self.encoder = encoder
         self.alpha = alpha
-        self.centroids = nn.Parameter(self.init_centroids(input_data, num_clusters))
+        
+        if input_data is not None:
+            self.centroids = nn.Parameter(self.init_centroids(input_data, num_clusters))
+        else:
+            self.centroids = nn.Parameter(torch.zeros(num_clusters, encoder.emb_dim))
         
     def init_centroids(self, input_data, num_clusters):
         # define initial centroids using k means
+        print("initializing centroids by using k-means...")
         x = self.encoder(input_data)
         x = torch.squeeze(x)
         centroids = kmeans(x, num_clusters)

@@ -42,7 +42,6 @@ class ConvTBlock(nn.Module):
 class EncoderBlock(nn.Module):
     def __init__(self, num_layers, base_unit_num=8, emb_dim=8, kernel_size=3):
         super(EncoderBlock, self).__init__()
-        padding = kernel_size//2
         
         self.emb_dim = emb_dim
         
@@ -91,7 +90,6 @@ class EncoderBlock(nn.Module):
 class DecoderBlock(nn.Module):
     def __init__(self, num_layers, base_unit_num=4, emb_dim=8, kernel_size=3):
         super(DecoderBlock, self).__init__()
-        padding = kernel_size//2
         
         self.init_layer1 = ConvTBlock(emb_dim, base_unit_num*4, kernel_size=7, stride=7)
         self.block1 = nn.Sequential(
